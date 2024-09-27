@@ -3,7 +3,6 @@
     This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
 
-
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
@@ -75,13 +74,9 @@ impl<T: PartialOrd + Clone> LinkedList<T> {
         let mut a = list_a.start;
         let mut b = list_b.start;
         while let (Some(ptr_a), Some(ptr_b)) = (a, b) {
-            let (node_a, node_b);
             // SAFETY: The address is guaranteed to be valid and contains
             // a unique reference to a `Node<T>` local variable.
-            unsafe {
-                node_a = ptr_a.as_ref();
-                node_b = ptr_b.as_ref();
-            }
+            let (node_a, node_b) = unsafe { (ptr_a.as_ref(), ptr_b.as_ref()) };
             if node_a.val <= node_b.val {
                 ret.add(node_a.val.clone());
                 a = node_a.next;
@@ -93,10 +88,7 @@ impl<T: PartialOrd + Clone> LinkedList<T> {
 
         let mut rest = if let None = a { b } else { a };
         while let Some(ptr) = rest {
-            let node;
-            unsafe {
-                node = ptr.as_ref();
-            }
+            let node = unsafe { ptr.as_ref() };
             ret.add(node.val.clone());
             rest = node.next;
         }

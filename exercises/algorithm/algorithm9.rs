@@ -1,8 +1,8 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +37,16 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+
+        let mut idx = self.len();
+        let mut par = self.parent_idx(idx);
+        while idx > 1 && !(self.comparator)(&self.items[par], &self.items[idx]) {
+            self.items.swap(par, idx);
+            idx = par;
+            par = self.parent_idx(idx);
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +66,21 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        if self.right_child_idx(idx) <= self.len() {
+            let (ls, rs) = (
+                self.smallest_child_idx(self.left_child_idx(idx)),
+                self.smallest_child_idx(self.right_child_idx(idx)),
+            );
+            if (self.comparator)(&self.items[ls], &self.items[rs]) {
+                rs
+            } else {
+                ls
+            }
+        } else if self.left_child_idx(idx) <= self.len() {
+            self.left_child_idx(idx)
+        } else {
+            idx
+        }
     }
 }
 
@@ -84,8 +106,26 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        let mut idx = 1;
+        while self.right_child_idx(idx) <= self.len() {
+            let (ls, rs) = (self.left_child_idx(idx), self.right_child_idx(idx));
+            if (self.comparator)(&self.items[ls], &self.items[rs]) {
+                self.items.swap(idx, ls);
+                idx = ls;
+            } else {
+                self.items.swap(idx, rs);
+                idx = rs;
+            };
+        }
+        if self.left_child_idx(idx) <= self.len() {
+            let ls = self.left_child_idx(idx);
+            self.items.swap(idx, ls);
+        }
+        self.count -= 1;
+        self.items.pop()
     }
 }
 
